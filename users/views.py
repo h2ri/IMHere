@@ -79,6 +79,9 @@ class SignUp(generics.CreateAPIView):
 
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+#Login
+#username and password
+#return ClientID ClientSecret AccessToken RefereshToken ExpireTime TokenFlag
 class Login(generics.ListAPIView):
     #queryset = User.objects.all()
     serializer_class = LoginSerializer
@@ -87,13 +90,28 @@ class Login(generics.ListAPIView):
         return [self.request.user]
     
     def list(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA)
-        
-        
-        dataq = generics.ListAPIView.list(self, request, *args, **kwargs)
-        
-        abc(dataq)
-        return dataq
-def abc(dataq):
-    #print dataq
-    pass
+        response = generics.ListAPIView.list(self, request, *args, **kwargs)
+        data1 = response.data
+        if data1[0]['token_flag'] == 1:
+            if getAuthFromRefreshToken(data1[0]):
+                return generics.ListAPIView.list(self, request, *args, **kwargs)
+        else:
+            return response
+
+
+# To Obtain Refresh Token if Access Token Expired 
+# /o/token for refresh  
+def getAuthFromRefreshToken(credtoken):
+    print credtoken['access_token']
+    conn = httplib.HTTPConnection("127.0.0.1:8000")
+    url =  "/o/token/"
+    headersMap = {"Content-Type": "application/x-www-form-urlencoded",
+    };
+    data = {'refresh_token':str(credtoken['refresh_token']),'grant_type':str('refresh_token'),'client_id':str(credtoken['client_id']),'client_secret':str(credtoken['client_secret'])
+    }
+    requestUrl = url + "?" + urllib.urlencode(data)
+    conn.request("POST", requestUrl, headers=headersMap)
+    response = conn.getresponse()
+    if response.status == 200:
+        return 1
+    
