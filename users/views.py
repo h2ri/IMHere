@@ -88,8 +88,12 @@ class Login(generics.ListAPIView):
     
     def list(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA)
+        
+        
         dataq = generics.ListAPIView.list(self, request, *args, **kwargs)
+        
         abc(dataq)
         return dataq
 def abc(dataq):
-    print dataq
+    #print dataq
+    pass
