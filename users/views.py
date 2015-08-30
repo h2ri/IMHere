@@ -30,7 +30,6 @@ class UserViewSet(viewsets.ModelViewSet):
         
 def getAuthToken(creds,password):
     conn = httplib.HTTPConnection("127.0.0.1:8000")
-    print conn
     url =  "/o/token/"
     headersMap = {
     "Content-Type": "application/x-www-form-urlencoded",
@@ -45,7 +44,7 @@ def getAuthToken(creds,password):
         result = json.loads( data )
         return result
     else:
-        print response.status
+    	return response
 
 class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, TokenHasScope]
@@ -71,9 +70,9 @@ class SignUp(generics.CreateAPIView):
             token =  getAuthToken(creds,password)
             q = User.objects.get(username = creds["username"])
             p = AccessToken.objects.get(user=q.id)
-            print p.token
-            print p.expires
-            print RefreshToken.objects.get(user=q.id).token
+            #print p.token
+            #print p.expires
+            #print RefreshToken.objects.get(user=q.id).token
             return Response(token ,status=status.HTTP_201_CREATED,
                             headers=headers)
 
@@ -102,7 +101,7 @@ class Login(generics.ListAPIView):
 # To Obtain Refresh Token if Access Token Expired 
 # /o/token for refresh  
 def getAuthFromRefreshToken(credtoken):
-    print credtoken['access_token']
+    #print credtoken['access_token']
     conn = httplib.HTTPConnection("127.0.0.1:8000")
     url =  "/o/token/"
     headersMap = {"Content-Type": "application/x-www-form-urlencoded",
