@@ -85,7 +85,7 @@ OAUTH2_PROVIDER = {
     'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'}
 }
 WSGI_APPLICATION = 'IMHere.wsgi.application'
-AUTH_PROFILE_MODULE = 'MyUser'
+AUTH_USER_MODEL = 'users.MyUser'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

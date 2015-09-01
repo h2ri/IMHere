@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from oauth2_provider.models import Application, AccessToken, RefreshToken
-
+from .models import MyUser
 from django.utils import timezone
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = MyUser
         write_only_fields = ('password',)
 
 
@@ -21,8 +21,8 @@ class SignUpSerializer(serializers.ModelSerializer):
     client_secret = serializers.SerializerMethodField()
 
     class Meta:
-        model = User
-        fields = ('username', 'password', 'client_id', 'client_secret')
+        model = MyUser
+        fields = ('email', 'password', 'date_of_birth', 'client_id', 'client_secret')
         # write_only_fields = ('password',)
 
     def get_client_id(self, obj):
@@ -59,7 +59,7 @@ class LoginSerializer(SignUpSerializer):
     flag = 0
 
     class Meta:
-        model = User
+        model = MyUser
         fields = ('client_id', 'client_secret', 'access_token', 'refresh_token', 'expires', 'token_flag')
 
     def get_access_token(self, obj):
