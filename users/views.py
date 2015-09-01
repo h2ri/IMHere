@@ -6,13 +6,10 @@ from django.contrib.auth.models import User, Group
 from rest_framework import permissions, viewsets, generics
 from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
 from rest_framework.authentication import BasicAuthentication
+
 from rest_framework.response import Response
 
 from rest_framework import status
-
-from rest_framework.renderers import JSONRenderer
-
-from oauth2_provider.models import AccessToken
 
 from .serializers import UserSerializer, GroupSerializer, SignUpSerializer, LoginSerializer
 from .permissions import IsAuthenticatedOrCreate
@@ -66,7 +63,7 @@ class SignUp(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         password = request.POST.get('password', '')
-        serializer = self.get_serializer(data=request.DATA)
+        serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
             self.object = serializer.save()
@@ -74,14 +71,14 @@ class SignUp(generics.CreateAPIView):
             creds = serializer.data
             # calling for accesstoken
             token = getAuthToken(creds, password)
-            q = User.objects.get(username=creds["username"])
+            '''q = User.objects.get(username=creds["username"])
             p = AccessToken.objects.get(user=q.id)
-            # print p.token
-            # print p.expires
-            # print RefreshToken.objects.get(user=q.id).token
+            print p.token
+            print p.expires
+            print RefreshToken.objects.get(user=q.id).token'''
             return Response(token, status=status.HTTP_201_CREATED,
                             headers=headers)
-
+        else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
