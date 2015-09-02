@@ -6,8 +6,10 @@ from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
 
-
-
+GENDER = (
+    ('M', 'Male'),
+    ('F', 'Female'),
+)
 
 class MyUserManager(BaseUserManager):
     def create_user(self, email, date_of_birth, password=None):
@@ -48,6 +50,11 @@ class MyUser(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    about = models.TextField(null=True, blank=True)
+    gender = models.CharField(
+        max_length=1, null=True, blank=True, choices=GENDER)
     date_of_birth = models.DateField()
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -64,6 +71,13 @@ class MyUser(AbstractBaseUser):
     def get_short_name(self):
         # The user is identified by their email address
         return self.email
+
+    def get_display_name(self):
+        return self.first_name
+
+    def get_full_name(self):
+        full_name = '%s %s' % (self.first_name, self.last_name)
+        return full_name.strip()
 
     def __str__(self):  # __unicode__ on Python 2
         return self.email
@@ -88,8 +102,11 @@ class MyUser(AbstractBaseUser):
     def is_superuser(self):
         return self.is_admin
 
+
 def create_auth_client(sender, instance=None, created=False, **kwargs):
     if created:
         Application.objects.create(user=instance, client_type=Application.CLIENT_CONFIDENTIAL,
                                    authorization_grant_type=Application.GRANT_PASSWORD)
+
+
 post_save.connect(create_auth_client, sender=settings.AUTH_USER_MODEL)

@@ -1,8 +1,9 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from rest_framework import serializers
 from oauth2_provider.models import Application, AccessToken, RefreshToken
-from .models import MyUser
 from django.utils import timezone
+
+from .models import MyUser
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -78,3 +79,8 @@ class LoginSerializer(SignUpSerializer):
 
     def get_token_flag(self, obj):
         return LoginSerializer.flag
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField()
+    confirm_password = serializers.CharField()

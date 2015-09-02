@@ -2,15 +2,19 @@ import httplib
 import urllib
 import json
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from rest_framework import permissions, viewsets, generics
 from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope, TokenHasScope
+
 from rest_framework.authentication import BasicAuthentication
-from .models import MyUser
+
 from rest_framework.response import Response
+
+from rest_framework.views import APIView
 
 from rest_framework import status
 
+from .models import MyUser
 from .serializers import UserSerializer, GroupSerializer, SignUpSerializer, LoginSerializer
 from .permissions import IsAuthenticatedOrCreate
 
@@ -118,3 +122,14 @@ def getAuthFromRefreshToken(credtoken):
     response = conn.getresponse()
     if response.status == 200:
         return 1
+
+
+# Forgot Password
+class PasswordReset(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        data = {}
+        print request.data['token']
+        print self.request.user.id
+        return Response(data,status=status.HTTP_200_OK)
